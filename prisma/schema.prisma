@@ -10,7 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Employees {
+model Employee {
   id                  Int       @id @default(autoincrement())
   fullName            String
   jobTitle            String
@@ -22,17 +22,21 @@ model Employees {
   primaryContactId    Int?       @unique
   secondaryContactId  Int?       @unique
 
-  primaryContact      EmergencyContacts?  @relation("PrimaryContact", fields: [primaryContactId], references: [id])
-  secondaryContact    EmergencyContacts?  @relation("SecondaryContact", fields: [secondaryContactId], references: [id])
+  primaryContact      EmergencyContact?  @relation("PrimaryContact", fields: [primaryContactId], references: [id])
+  secondaryContact    EmergencyContact?  @relation("SecondaryContact", fields: [secondaryContactId], references: [id])
+
+  @@map(name:"Employees")
 }
 
-model EmergencyContacts {
+model EmergencyContact {
   id           Int      @id @default(autoincrement())
   name         String
   phoneNumber  String
   relationship String
-  primary      Employees?  @relation("PrimaryContact")
-  secondary    Employees?  @relation("SecondaryContact")
+  primary      Employee?  @relation("PrimaryContact")
+  secondary    Employee?  @relation("SecondaryContact")
+
+  @@map(name:"Emergency Contacts")
 }
 
 
