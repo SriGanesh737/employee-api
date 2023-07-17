@@ -6,6 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class EmployeesService {
   constructor(private prisma: PrismaService) {}
 
+  // Function to create a new employee and their emergency contacts
   async createEmployee(data: any): Promise<Employee> {
     return this.prisma.employee.create({
         data: {
@@ -38,6 +39,7 @@ export class EmployeesService {
       });
   }
 
+  // Function to list employees with pagination
   async listEmployees(page: number, pageSize: number): Promise<Employee[]> {
     return this.prisma.employee.findMany({
      include: { primaryContact:true, secondaryContact:true },
@@ -46,6 +48,7 @@ export class EmployeesService {
     });
   }
 
+   // Function to update an employee and their emergency contacts
   async updateEmployee(
     id: number,
     data: Prisma.EmployeeUpdateInput,
@@ -53,6 +56,7 @@ export class EmployeesService {
     const { primaryContact, secondaryContact, ...employeeData } = data;
     console.log(employeeData);
 
+    // Update employee details
     const employeeUpdate = await this.prisma.employee.update({
       where: { id },
       data: {
@@ -60,7 +64,7 @@ export class EmployeesService {
       },
     });
 
-    
+    // Update primary emergency contact if provided
     const primaryContactUpdate = primaryContact
       ? await this.prisma.emergencyContact.update({
           where: { id: employeeUpdate.primaryContactId || undefined },
@@ -69,7 +73,8 @@ export class EmployeesService {
           },
         })
       : null;
-      
+     
+    // Update secondary emergency contact if provided
     const secondaryContactUpdate = secondaryContact
       ? await this.prisma.emergencyContact.update({
           where: { id: employeeUpdate.secondaryContactId || undefined },
@@ -79,6 +84,7 @@ export class EmployeesService {
         })
       : null;
 
+    // Retrieve the updated employee with their emergency contacts
     return this.prisma.employee.findUnique({
       where: { id },
       include: {
@@ -88,8 +94,9 @@ export class EmployeesService {
     });
   }
 
+  // Function to delete an employee and their emergency contacts
   async deleteEmployee(id: number): Promise<Employee> {
-    // First, retrieve the employee with their emergency contacts
+  // First, retrieve the employee with their emergency contacts
   const employee = await this.prisma.employee.findUnique({
     where: { id },
     include: { primaryContact: true, secondaryContact: true },
@@ -114,6 +121,7 @@ export class EmployeesService {
   return this.prisma.employee.delete({ where: { id } });
   } 
 
+  // Function to get an employee by ID
   async getEmployeeById(id: number): Promise<Employee | null> {
     return this.prisma.employee.findUnique({
       where: { id },
