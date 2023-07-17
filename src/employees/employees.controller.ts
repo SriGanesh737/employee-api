@@ -9,7 +9,6 @@ export class EmployeesController {
   // Create a new employee
   @Post()
   createEmployee(@Body() data: any): Promise<Employee> {
-    console.log(data);
     return this.employeesService.createEmployee(data);
   }
 
